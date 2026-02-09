@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.demodogo.ev_sum_2.data.UserStore
 import com.demodogo.ev_sum_2.data.Validators
-import com.demodogo.ev_sum_2.ui.theme.*
+import com.demodogo.ev_sum_2.ui.theme.Success
 
 @Composable
 fun RegisterScreen(
@@ -33,7 +33,7 @@ fun RegisterScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Background
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
@@ -47,7 +47,7 @@ fun RegisterScreen(
                 imageVector = Icons.Filled.PersonAdd,
                 contentDescription = null,
                 modifier = Modifier.size(100.dp),
-                tint = Primary
+                tint = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -55,7 +55,7 @@ fun RegisterScreen(
             Text(
                 text = "Crear cuenta",
                 style = MaterialTheme.typography.headlineLarge,
-                color = Primary,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
 
@@ -64,7 +64,7 @@ fun RegisterScreen(
             Text(
                 text = "Regístrate para continuar",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Primary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -79,13 +79,13 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Primary,
-                    unfocusedBorderColor = Primary.copy(alpha = 0.3f),
-                    focusedLeadingIconColor = Primary,
-                    unfocusedLeadingIconColor = Primary.copy(alpha = 0.3f),
-                    focusedTextColor = Primary,
-                    unfocusedTextColor = Primary,
-                    cursorColor = Secondary
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    cursorColor = MaterialTheme.colorScheme.secondary
                 )
             )
 
@@ -109,15 +109,15 @@ fun RegisterScreen(
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Primary,
-                    unfocusedBorderColor = Primary.copy(alpha = 0.3f),
-                    focusedLeadingIconColor = Primary,
-                    unfocusedLeadingIconColor = Primary.copy(alpha = 0.3f),
-                    focusedTrailingIconColor = Primary,
-                    unfocusedTrailingIconColor = Primary.copy(alpha = 0.3f),
-                    focusedTextColor = Primary,
-                    unfocusedTextColor = Primary,
-                    cursorColor = Secondary
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                    unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    cursorColor = MaterialTheme.colorScheme.secondary
                 )
             )
 
@@ -158,8 +158,8 @@ fun RegisterScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Primary,
-                    contentColor = Surface
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text(
@@ -175,7 +175,7 @@ fun RegisterScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isError) Error.copy(alpha = 0.1f) else Success.copy(alpha = 0.1f)
+                        containerColor = if (isError) MaterialTheme.colorScheme.error.copy(alpha = 0.1f) else Success.copy(alpha = 0.1f)
                     )
                 ) {
                     Row(
@@ -186,16 +186,16 @@ fun RegisterScreen(
                         Icon(
                             imageVector = if (isError) Icons.Default.Info else Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = if (isError) Error else Success
+                            tint = if (isError) MaterialTheme.colorScheme.error else Success
                         )
                         Text(
                             text = message!!,
                             modifier = Modifier.weight(1f),
-                            color = Primary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodyMedium
                         )
                         IconButton(onClick = { message = null }) {
-                            Icon(Icons.Default.Close, "Cerrar", tint = Primary.copy(alpha = 0.6f))
+                            Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         }
                     }
                 }
@@ -207,14 +207,14 @@ fun RegisterScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Divider(color = Primary.copy(alpha = 0.3f), modifier = Modifier.weight(1f))
+                Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), modifier = Modifier.weight(1f))
                 Text(
                     text = "ACCESIBILIDAD",
-                    color = Primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 8.dp),
                     style = MaterialTheme.typography.bodyMedium
                 )
-                Divider(color = Primary.copy(alpha = 0.3f), modifier = Modifier.weight(1f))
+                Divider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f), modifier = Modifier.weight(1f))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -231,8 +231,8 @@ fun RegisterScreen(
                         .height(90.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        disabledContainerColor = Primary.copy(alpha = 0.1f),
-                        disabledContentColor = Primary.copy(alpha = 0.7f)
+                        disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                        disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -250,8 +250,8 @@ fun RegisterScreen(
                         .height(90.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        disabledContainerColor = Primary.copy(alpha = 0.1f),
-                        disabledContentColor = Primary.copy(alpha = 0.7f)
+                        disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                        disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -267,7 +267,7 @@ fun RegisterScreen(
             Text(
                 text = "Estas opciones están deshabilitadas por el momento.",
                 style = MaterialTheme.typography.bodySmall,
-                color = Primary.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -280,12 +280,12 @@ fun RegisterScreen(
             ) {
                 Text(
                     text = "Ya tienes cuenta? ",
-                    color = Primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
                     text = "Inicia Sesión",
-                    color = Secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.clickable { onBackToLogin() }

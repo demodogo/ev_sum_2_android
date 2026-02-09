@@ -12,9 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.demodogo.ev_sum_2.data.UserStore
-import com.demodogo.ev_sum_2.ui.theme.Background
-import com.demodogo.ev_sum_2.ui.theme.Primary
-import com.demodogo.ev_sum_2.ui.theme.Surface
 
 @Composable
 fun HomeScreen(
@@ -22,7 +19,7 @@ fun HomeScreen(
 ) {
     val email = UserStore.currentUserEmail() ?: "Usuario"
 
-    Surface(modifier = Modifier.fillMaxSize(), color = Background) {
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -36,27 +33,27 @@ fun HomeScreen(
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = null,
-                    tint = Primary
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "Home",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = Primary,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
                 )
             }
 
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Primary.copy(alpha = 0.08f))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Sesión activa:", color = Primary, fontWeight = FontWeight.Bold)
-                    Text(email, color = Primary)
+                    Text("Sesión activa:", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+                    Text(email, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Usuarios registrados: ${UserStore.registeredCount()}/5",
-                        color = Primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -73,8 +70,8 @@ fun HomeScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Primary,
-                    contentColor = Surface
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Icon(Icons.Default.Logout, contentDescription = null)

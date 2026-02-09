@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.demodogo.ev_sum_2.ui.theme.*
+import com.demodogo.ev_sum_2.ui.theme.Success
 
 @Composable
 fun RecoverScreen(
@@ -30,7 +30,7 @@ fun RecoverScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Background
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
@@ -44,7 +44,7 @@ fun RecoverScreen(
                 imageVector = Icons.Outlined.LockReset,
                 contentDescription = "Recover Icon",
                 modifier = Modifier.size(100.dp),
-                tint = Primary
+                tint = MaterialTheme.colorScheme.primary
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -52,7 +52,7 @@ fun RecoverScreen(
             Text(
                 text = "Recuperar Contraseña",
                 style = MaterialTheme.typography.headlineLarge,
-                color = Primary,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
 
@@ -61,7 +61,7 @@ fun RecoverScreen(
             Text(
                 text = "Ingresa tu correo",
                 style = MaterialTheme.typography.bodyLarge,
-                color = Primary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -79,13 +79,13 @@ fun RecoverScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Primary,
-                    unfocusedBorderColor = Primary.copy(alpha = 0.3f),
-                    focusedLeadingIconColor = Primary,
-                    unfocusedLeadingIconColor = Primary.copy(alpha = 0.3f),
-                    focusedTextColor = Primary,
-                    unfocusedTextColor = Primary,
-                    cursorColor = Secondary
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    cursorColor = MaterialTheme.colorScheme.secondary
                 )
             )
 
@@ -106,8 +106,8 @@ fun RecoverScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Primary,
-                    contentColor = Surface
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Text("Enviar", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
@@ -119,7 +119,7 @@ fun RecoverScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isError) Error.copy(alpha = 0.1f) else Success.copy(alpha = 0.1f)
+                        containerColor = if (isError) MaterialTheme.colorScheme.error.copy(alpha = 0.1f) else Success.copy(alpha = 0.1f)
                     )
                 ) {
                     Row(
@@ -130,16 +130,16 @@ fun RecoverScreen(
                         Icon(
                             imageVector = if (isError) Icons.Default.Info else Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = if (isError) Error else Success
+                            tint = if (isError) MaterialTheme.colorScheme.error else Success
                         )
                         Text(
                             text = message!!,
                             modifier = Modifier.weight(1f),
-                            color = Primary,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.bodyMedium
                         )
                         IconButton(onClick = { message = null }) {
-                            Icon(Icons.Default.Close, "Cerrar", tint = Primary.copy(alpha = 0.6f))
+                            Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         }
                     }
                 }
@@ -153,12 +153,12 @@ fun RecoverScreen(
             ) {
                 Text(
                     text = "Volver a ",
-                    color = Primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Text(
                     text = "Iniciar Sesión",
-                    color = Secondary,
+                    color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.clickable { onBackToLogin() }
