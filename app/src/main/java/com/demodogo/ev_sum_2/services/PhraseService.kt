@@ -24,6 +24,11 @@ class PhraseService (
         }
     }
 
+    suspend fun update(id: String, newText: String) {
+        val clean = newText.trim()
+        if (clean.isBlank()) throw IllegalArgumentException("La frase no puede estar vacía")
+        repo.update(id, clean);
+    }
     suspend fun delete(id: String) {
         try {
             require(id.isNotBlank()) { "Id inválido" }

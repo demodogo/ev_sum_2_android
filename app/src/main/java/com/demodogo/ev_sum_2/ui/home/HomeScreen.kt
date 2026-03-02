@@ -7,9 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,7 +21,6 @@ import com.demodogo.ev_sum_2.services.AuthService
 import com.demodogo.ev_sum_2.services.PhraseService
 import com.demodogo.ev_sum_2.services.TextToSpeechController
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
@@ -43,6 +40,10 @@ fun HomeScreen(
 
     var newPhrase by rememberSaveable { mutableStateOf("") }
     var search by rememberSaveable { mutableStateOf("") }
+
+    var editingPhraseId by rememberSaveable { mutableStateOf<String?>(null) }
+    var editingText by rememberSaveable { mutableStateOf("") }
+    var showEditDialog by rememberSaveable { mutableStateOf(false) }
 
     var phrases by remember { mutableStateOf<List<Phrase>>(emptyList()) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
@@ -179,7 +180,7 @@ fun HomeScreen(
             if (isLoading) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
             LazyColumn(
-                modifier = Modifier.heightIn(max = 360.dp),
+                modifier = Modifier.heightIn(max = 400.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
@@ -203,16 +204,16 @@ fun HomeScreen(
 
                             Button(
                                 onClick = { tts.speak(p.text) },
-                                modifier = Modifier.fillMaxWidth().height(60.dp),
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.inverseSurface,
+                                    containerColor = MaterialTheme.colorScheme.primary,
                                     contentColor = MaterialTheme.colorScheme.onPrimary
                                 ),
                                 shape = RoundedCornerShape(12.dp)
                             ) {
-                                Icon(Icons.AutoMirrored.Filled.VolumeUp, null, modifier = Modifier.size(28.dp))
+                                Icon(Icons.AutoMirrored.Filled.VolumeUp, null, modifier = Modifier.size(24.dp))
                                 Spacer(Modifier.width(12.dp))
-                                Text("REPRODUCIR VOZ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                                Text("REPRODUCIR VOZ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold)
                             }
 
                             Row(
@@ -224,7 +225,7 @@ fun HomeScreen(
                                     modifier = Modifier.weight(1f).height(48.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.secondary,
-                                        contentColor = MaterialTheme.colorScheme.onSecondary
+                                        contentColor = MaterialTheme.colorScheme.background
                                     ),
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
@@ -235,22 +236,40 @@ fun HomeScreen(
 
                                 Button(
                                     onClick = {
-                                        scope.launch {
-                                            phraseService.delete(p.id)
-                                            loadPhrases()
-                                        }
+                                        editingPhraseId = p.id
+                                        editingText = p.text
+                                        showEditDialog = true
                                     },
                                     modifier = Modifier.weight(1f).height(48.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.error,
-                                        contentColor = Color(0xFFD50707)
+                                        containerColor = MaterialTheme.colorScheme.surfaceBright,
+                                        contentColor = MaterialTheme.colorScheme.background
                                     ),
-                                    shape = RoundedCornerShape(12.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, null, modifier = Modifier.size(20.dp))
+                                    Icon(Icons.Default.Edit, null, modifier = Modifier.size(20.dp))
                                     Spacer(Modifier.width(8.dp))
-                                    Text("Borrar", fontWeight = FontWeight.Bold)
+                                    Text("Editar", fontWeight = FontWeight.Bold)
                                 }
+                            }
+
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        phraseService.delete(p.id)
+                                        loadPhrases()
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(Icons.Default.Delete, null, modifier = Modifier.size(20.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text("BORRAR FRASE", fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -264,8 +283,8 @@ fun HomeScreen(
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = Color(0xFFD50707)
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -274,5 +293,53 @@ fun HomeScreen(
                 Text("CERRAR SESIÓN", fontWeight = FontWeight.Black)
             }
         }
+    }
+
+    if (showEditDialog) {
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            title = { Text("Editar frase") },
+            text = {
+                OutlinedTextField(
+                    value = editingText,
+                    onValueChange = { editingText = it },
+                    label = { Text("Frase") },
+                    singleLine = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val id = editingPhraseId
+                        if (id == null) {
+                            showEditDialog = false
+                            return@TextButton
+                        }
+
+                        scope.launch {
+                            isLoading = true
+                            try {
+                                phraseService.update(id, editingText)
+                                info = "Frase actualizada."
+                                error = null
+                                showEditDialog = false
+                                editingPhraseId = null
+                                editingText = ""
+                                loadPhrases()
+                            } catch (e: Exception) {
+                                error = e.message ?: "No se pudo actualizar."
+                                info = null
+                            } finally {
+                                isLoading = false
+                            }
+                        }
+                    }
+                ) { Text("Guardar") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditDialog = false }) { Text("Cancelar") }
+            }
+        )
     }
 }

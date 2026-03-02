@@ -36,6 +36,10 @@ class PhraseRepository (
         }
     }
 
+    suspend fun update(id: String, newText: String) {
+        col().document(id).update(mapOf("text" to newText)).await()
+    }
+
     suspend fun delete(id: String) {
         col().document(id).delete().await()
     }
