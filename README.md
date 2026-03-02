@@ -100,3 +100,7 @@ app/src/main/java/com/demodogo/ev_sum_2/
 - [x] CRUD de textos/frases probado en Firebase bajo aislamiento por documento local a `FirebaseAuth` UID.
 - [x] Controladores nativos (TextToSpeech y FusedLocation) operando bajo la encapsulación Try-Catch requerida contra `SecurityException` y bloqueos hardware.
 - [x] Tests unitarios (`SpeechNormalizersTest.kt`) sobre casos críticos de formato y espacios de dictado.
+
+
+**Descarga del APK:**
+https://github.com/demodogo/ev_sum_2_android/releases/tag/v1.0.0
