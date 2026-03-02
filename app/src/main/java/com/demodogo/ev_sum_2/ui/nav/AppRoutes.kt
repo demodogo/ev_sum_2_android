@@ -5,4 +5,6 @@ object AppRoutes {
     const val REGISTER = "register"
     const val RECOVER = "recover"
     const val HOME = "home"
+
+    const val LOCATION = "location"
 }

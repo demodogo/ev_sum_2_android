@@ -1,31 +1,96 @@
 package com.demodogo.ev_sum_2.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.demodogo.ev_sum_2.domain.models.Phrase
 import com.demodogo.ev_sum_2.services.AuthService
+import com.demodogo.ev_sum_2.services.PhraseService
+import com.demodogo.ev_sum_2.services.TextToSpeechController
+import kotlinx.coroutines.launch
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun HomeScreen(
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onOpenLocation: () -> Unit
 ) {
     val authService = remember { AuthService() }
+    val phraseService = remember { PhraseService() }
+    val scope = rememberCoroutineScope()
+
     val email = authService.currentEmail() ?: "Usuario"
+
+    var newPhrase by rememberSaveable { mutableStateOf("") }
+    var search by rememberSaveable { mutableStateOf("") }
+
+    var phrases by remember { mutableStateOf<List<Phrase>>(emptyList()) }
+    var isLoading by rememberSaveable { mutableStateOf(false) }
+    var error by rememberSaveable { mutableStateOf<String?>(null) }
+    var info by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
+    val tts = remember { TextToSpeechController(context) }
+
+    DisposableEffect(Unit) {
+        onDispose { tts.destroy() }
+    }
+
+    fun copyToClipboard(text: String) {
+        clipboard.setText(AnnotatedString(text))
+        info = "Copiado al portapapeles."
+        error = null
+    }
+
+    fun loadPhrases() {
+        scope.launch {
+            isLoading = true
+            error = null
+            try {
+                phrases = phraseService.get()
+            } catch(e: Exception) {
+                error = e.message ?: "Error al cargar las frases"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) { loadPhrases() }
+
+    val filtered = remember(phrases, search) {
+        val q = search.trim()
+        if (q.isBlank()) phrases
+        else phrases.filter { it.text.contains(q, ignoreCase = true ) }
+    }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
@@ -35,50 +100,178 @@ fun HomeScreen(
                 Icon(
                     imageVector = Icons.Default.Home,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
                 )
                 Text(
-                    text = "Home",
+                    text = "Inicio",
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Black
                 )
             }
 
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Sesión activa:", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
-                    Text(email, color = MaterialTheme.colorScheme.onSurface)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Usuarios registrados: 2/5",
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Text("Usuario conectado:", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                    Text(email, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            OutlinedButton(
+                onClick = onOpenLocation,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("📍 Ver mi ubicación", fontWeight = FontWeight.Black)
+            }
+
+            OutlinedTextField(
+                value = newPhrase,
+                onValueChange = { newPhrase = it },
+                label = { Text("¿Qué quieres decir?", fontWeight = FontWeight.Bold) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                textStyle = MaterialTheme.typography.bodyLarge
+            )
+
+            Button(
+                onClick = {
+                    val text = newPhrase.trim()
+                    if (text.isBlank()) {
+                        error = "Escribe algo antes de guardar."
+                        return@Button
+                    }
+                    scope.launch {
+                        isLoading = true
+                        try {
+                            phraseService.add(text)
+                            newPhrase = ""
+                            info = "Guardado con éxito."
+                            loadPhrases()
+                        } catch (e: Exception) {
+                            error = e.message
+                        } finally {
+                            isLoading = false
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("GUARDAR NUEVA FRASE", fontWeight = FontWeight.Black)
+            }
+
+            OutlinedTextField(
+                value = search,
+                onValueChange = { search = it },
+                label = { Text("Buscar frase guardada") },
+                leadingIcon = { Icon(Icons.Default.Search, null) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            if (isLoading) LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+
+            LazyColumn(
+                modifier = Modifier.heightIn(max = 360.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(filtered) { p ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = p.text,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Button(
+                                onClick = { tts.speak(p.text) },
+                                modifier = Modifier.fillMaxWidth().height(60.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.inverseSurface,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.VolumeUp, null, modifier = Modifier.size(28.dp))
+                                Spacer(Modifier.width(12.dp))
+                                Text("REPRODUCIR VOZ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Button(
+                                    onClick = { copyToClipboard(p.text) },
+                                    modifier = Modifier.weight(1f).height(48.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.secondary,
+                                        contentColor = MaterialTheme.colorScheme.onSecondary
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(Icons.Default.ContentCopy, null, modifier = Modifier.size(20.dp))
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("Copiar", fontWeight = FontWeight.Bold)
+                                }
+
+                                Button(
+                                    onClick = {
+                                        scope.launch {
+                                            phraseService.delete(p.id)
+                                            loadPhrases()
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f).height(48.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.error,
+                                        contentColor = Color(0xFFD50707)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Icon(Icons.Default.Delete, null, modifier = Modifier.size(20.dp))
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("Borrar", fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             Button(
                 onClick = {
                     authService.logout()
                     onLogout()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = Color(0xFFD50707)
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Icon(Icons.Default.Logout, contentDescription = null)
-                Spacer(modifier = Modifier.width(10.dp))
-                Text("Cerrar sesión", fontWeight = FontWeight.Bold)
+                Icon(Icons.AutoMirrored.Filled.Logout, null)
+                Spacer(Modifier.width(12.dp))
+                Text("CERRAR SESIÓN", fontWeight = FontWeight.Black)
             }
         }
     }

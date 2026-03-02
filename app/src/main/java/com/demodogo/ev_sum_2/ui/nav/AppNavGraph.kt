@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.demodogo.ev_sum_2.ui.home.HomeScreen
 import com.demodogo.ev_sum_2.ui.auth.LoginScreen
 import com.demodogo.ev_sum_2.ui.auth.RegisterScreen
+import com.demodogo.ev_sum_2.ui.location.DeviceLocationScreen
 import com.example.sm_1.ui.recover.RecoverScreen
 
 @Composable
@@ -48,7 +49,16 @@ fun AppNavGraph() {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
+                },
+                onOpenLocation = {
+                    navController.navigate(AppRoutes.LOCATION)
                 }
+            )
+        }
+
+        composable(AppRoutes.LOCATION) {
+            DeviceLocationScreen(
+                onBack = { navController.popBackStack() }
             )
         }
     }
