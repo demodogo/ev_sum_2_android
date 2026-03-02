@@ -4,6 +4,7 @@ import android.content.Context
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import androidx.core.content.edit
 
 object ThemeStore {
     private const val PREFS_NAME = "theme_prefs"
@@ -19,7 +20,7 @@ object ThemeStore {
 
     fun setDarkTheme(context: Context, isDark: Boolean) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(KEY_IS_DARK_THEME, isDark).apply()
+        prefs.edit { putBoolean(KEY_IS_DARK_THEME, isDark) }
         _isDarkTheme.value = isDark
     }
 }

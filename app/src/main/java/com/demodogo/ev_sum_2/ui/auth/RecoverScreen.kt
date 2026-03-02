@@ -18,7 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.demodogo.ev_sum_2.domain.validators.isBasicEmailValid
+import com.demodogo.ev_sum_2.domain.validators.isValidPassword
+import com.demodogo.ev_sum_2.services.AuthService
 import com.demodogo.ev_sum_2.ui.theme.Success
+import kotlinx.coroutines.launch
 
 @Composable
 fun RecoverScreen(
@@ -27,6 +31,8 @@ fun RecoverScreen(
     var email by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }
     var isError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    val authService = remember { AuthService() }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -93,12 +99,27 @@ fun RecoverScreen(
 
             Button(
                 onClick = {
-                    if (email.trim().isBlank()) {
-                        message = "Debes ingresar un email."
-                        isError = true
-                    } else {
-                        message = "Solicitud de recuperación enviada"
-                        isError = false
+                    val cleanEmail = email.trim()
+                    when {
+                        cleanEmail.isBlank() -> {
+                            message = "Completa tu email"
+                            isError = true
+                        }
+                        !cleanEmail.isBasicEmailValid() -> {
+                            message = "Email inválido (ej: nombre@dominio.com)"
+                            isError = true
+                        }
+                        else -> {
+                            scope.launch {
+                                try {
+                                    authService.recover(cleanEmail);
+                                    message = "Solicitud de recuperación enviada"
+                                } catch(e: Exception) {
+                                    message = e.message ?: "Error al enviar solicitud"
+                                    isError = true
+                                }
+                            }
+                        }
                     }
                 },
                 modifier = Modifier

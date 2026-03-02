@@ -7,17 +7,19 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.demodogo.ev_sum_2.data.UserStore
+import com.demodogo.ev_sum_2.services.AuthService
 
 @Composable
 fun HomeScreen(
     onLogout: () -> Unit
 ) {
-    val email = UserStore.currentUserEmail() ?: "Usuario"
+    val authService = remember { AuthService() }
+    val email = authService.currentEmail() ?: "Usuario"
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column(
@@ -52,7 +54,7 @@ fun HomeScreen(
                     Text(email, color = MaterialTheme.colorScheme.onSurface)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Usuarios registrados: ${UserStore.registeredCount()}/5",
+                        text = "Usuarios registrados: 2/5",
                         color = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -62,7 +64,7 @@ fun HomeScreen(
 
             Button(
                 onClick = {
-                    UserStore.logout()
+                    authService.logout()
                     onLogout()
                 },
                 modifier = Modifier
