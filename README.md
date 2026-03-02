@@ -1,5 +1,3 @@
-# EV_SUM_2
-
 📌 **Descripción general del proyecto**
 Aplicación móvil Android desarrollada con Kotlin y Jetpack Compose. Implementa funcionalidades en la nube utilizando Firebase (Authentication y Firestore) y aprovecha sensores del dispositivo para entrada de datos por voz y geolocalización avanzada. La aplicación está diseñada bajo el patrón Service-Repository para una clara separación de responsabilidades y un fácil mantenimiento.
 
