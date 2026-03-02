@@ -1,10 +1,8 @@
 package com.demodogo.ev_sum_2.services
 
 import com.demodogo.ev_sum_2.data.repositories.AuthRepository
-import com.demodogo.ev_sum_2.data.repositories.UserRepository
-import com.demodogo.ev_sum_2.domain.models.AppUser
-import com.demodogo.ev_sum_2.domain.validators.isBasicEmailValid
-import com.demodogo.ev_sum_2.domain.validators.isValidPassword
+import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
 
 class AuthService(
     private val repo: AuthRepository = AuthRepository(),
@@ -36,6 +34,9 @@ class AuthService(
 
     fun logout() = repo.logout()
     fun isLoggedIn(): Boolean = repo.isLoggedIn()
+
+    fun authStateFlow(): Flow<FirebaseUser?> = repo.authStateFlow();
+
     fun currentEmail(): String? = repo.currentEmail()
 
     private fun mapFirebaseAuthError(e: Exception): Exception {

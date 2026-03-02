@@ -3,9 +3,7 @@ package com.demodogo.ev_sum_2.data.repositories
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
-import com.demodogo.ev_sum_2.domain.models.DeviceLocation
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.tasks.await

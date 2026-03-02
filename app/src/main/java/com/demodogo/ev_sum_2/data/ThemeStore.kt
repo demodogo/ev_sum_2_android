@@ -1,10 +1,10 @@
 package com.demodogo.ev_sum_2.data
 
 import android.content.Context
+import androidx.core.content.edit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import androidx.core.content.edit
 
 object ThemeStore {
     private const val PREFS_NAME = "theme_prefs"
